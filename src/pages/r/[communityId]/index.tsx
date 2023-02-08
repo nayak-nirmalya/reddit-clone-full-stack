@@ -24,7 +24,9 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
     return {
       props: {
-        communityData: communityDoc.data()
+        communityData: JSON.parse(
+          safeJsonStringify({ id: communityDoc.id, ...communityDoc.data })
+        )
       }
     };
   } catch (error) {
