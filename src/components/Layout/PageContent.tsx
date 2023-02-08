@@ -3,7 +3,7 @@ import React from "react";
 
 type PageContentProps = {};
 
-const PageContent: React.FC<PageContentProps> = ({ childrens }: any) => {
+const PageContent: React.FC<PageContentProps> = ({ childrens }) => {
   return (
     <Flex justify="center" p="16px 0px" border="1px solid red">
       <Flex
