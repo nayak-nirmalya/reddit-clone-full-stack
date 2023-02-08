@@ -3,7 +3,7 @@ import React from "react";
 
 type PageContentProps = {};
 
-const PageContent: React.FC<PageContentProps> = ({ childrens }) => {
+const PageContent: React.FC<PageContentProps> = ({ children }: any) => {
   return (
     <Flex justify="center" p="16px 0px" border="1px solid red">
       <Flex
@@ -19,7 +19,7 @@ const PageContent: React.FC<PageContentProps> = ({ childrens }) => {
           mr={{ base: 0, md: 6 }}
           border="1px solid blue"
         >
-          {childrens && childrens[0 as keyof typeof childrens]}
+          {children && children[0 as keyof typeof children]}
         </Flex>
 
         {/* RHS */}
@@ -29,7 +29,7 @@ const PageContent: React.FC<PageContentProps> = ({ childrens }) => {
           flexGrow={1}
           border="1px solid orange"
         >
-          {childrens && childrens[1 as keyof typeof childrens]}
+          {children && children[1 as keyof typeof children]}
         </Flex>
       </Flex>
     </Flex>
