@@ -55,14 +55,22 @@ const NewPostForm: React.FC<NewPostFormProps> = () => {
       <Flex width="100%">
         {formTabs.map((item) => (
           <TabItem
+            key={item.title}
             item={item}
             selected={item.title === selectedItem}
             setSelectedTab={setSelectedItem}
           />
         ))}
       </Flex>
-      <Flex>
-        <TextInputs />
+      <Flex p={4}>
+        {selectedItem === "Post" && (
+          <TextInputs
+            textInputs={textInput}
+            handleCreatePost={handleCreatePost}
+            onChange={onTextChange}
+            loading={false}
+          />
+        )}
       </Flex>
     </Flex>
   );

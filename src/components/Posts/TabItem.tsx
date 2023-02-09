@@ -6,6 +6,7 @@ type TabItemProps = {
   item: TabItemType;
   selected: boolean;
   setSelectedTab: (value: string) => void;
+  key: string;
 };
 
 const TabItem: React.FC<TabItemProps> = ({
