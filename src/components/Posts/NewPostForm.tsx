@@ -6,8 +6,22 @@ import { IoDocumentText, IoImageOutline } from "react-icons/io5";
 import TabItem from "./TabItem";
 import TextInputs from "./PostForm/TextInputs";
 import ImageUpload from "./PostForm/ImageUpload";
+import { Post } from "@/atoms/postAtom";
+import { User } from "firebase/auth";
+import { useRouter } from "next/router";
+import {
+  addDoc,
+  collection,
+  serverTimestamp,
+  Timestamp,
+  updateDoc
+} from "firebase/firestore";
+import { firestore, storage } from "@/firebase/clientApp";
+import { getDownloadURL, ref, uploadString } from "firebase/storage";
 
-type NewPostFormProps = {};
+type NewPostFormProps = {
+  user: User;
+};
 
 const formTabs: TabItemType[] = [
   {
@@ -37,7 +51,8 @@ export type TabItemType = {
   icon: typeof Icon.arguments;
 };
 
-const NewPostForm: React.FC<NewPostFormProps> = () => {
+const NewPostForm: React.FC<NewPostFormProps> = ({ user }) => {
+  const router = useRouter();
   const [selectedItem, setSelectedItem] = useState(formTabs[0].title);
   const [selectedFile, setSelectedFile] = useState<string>();
   const [loading, setLoading] = useState(false);
@@ -46,7 +61,47 @@ const NewPostForm: React.FC<NewPostFormProps> = () => {
     body: ""
   });
 
-  const handleCreatePost = async () => {};
+  const handleCreatePost = async () => {
+    const communityId = router.query;
+
+    // create new post object => type Post
+    const newPost: Post = {
+      communityId: communityId as unknown as string,
+      creatorId: user?.uid,
+      creatorDisplayName: user.email!.split("@")[0],
+      title: textInput.title,
+      body: textInput.body,
+      numberOfComments: 0,
+      voteStatus: 0,
+      createdAt: serverTimestamp() as Timestamp
+      // id: ""
+    };
+
+    setLoading(true);
+    try {
+      // store the post in firestore db
+      const postDocRef = await addDoc(collection(firestore, "posts"), newPost);
+
+      // check for selected file
+      if (selectedFile) {
+        // store image in storage => getDownloadURL (return imageURL)
+        const imageRef = ref(storage, `posts/${postDocRef.id}/image`);
+        await uploadString(imageRef, selectedFile, "data_url");
+        const downloadURL = await getDownloadURL(imageRef);
+
+        // update postDoc with uploaded URL
+        await updateDoc(postDocRef, {
+          imageURL: downloadURL
+        });
+      }
+    } catch (error: any) {
+      console.error("handleCreatePostError", error.message);
+    }
+    setLoading(false);
+
+    // redirect user to community page (router)
+    router.back();
+  };
 
   const onSelectImage = (event: React.ChangeEvent<HTMLInputElement>) => {
     const reader = new FileReader();
