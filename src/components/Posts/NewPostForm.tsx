@@ -39,6 +39,7 @@ export type TabItemType = {
 const NewPostForm: React.FC<NewPostFormProps> = () => {
   const [selectedItem, setSelectedItem] = useState(formTabs[0].title);
   const [selectedFile, setSelectedFile] = useState<string>();
+  const [loading, setLoading] = useState(false);
   const [textInput, setTextInput] = useState({
     title: "",
     body: ""
@@ -48,7 +49,17 @@ const NewPostForm: React.FC<NewPostFormProps> = () => {
 
   const onSelectImage = () => {};
 
-  const onTextChange = () => {};
+  const onTextChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const {
+      target: { name, value }
+    } = event;
+    setTextInput((prev) => ({
+      ...prev,
+      [name]: value
+    }));
+  };
 
   return (
     <Flex direction="column" bg="white" borderRadius={4} mt={2}>
@@ -68,7 +79,7 @@ const NewPostForm: React.FC<NewPostFormProps> = () => {
             textInputs={textInput}
             handleCreatePost={handleCreatePost}
             onChange={onTextChange}
-            loading={false}
+            loading={loading}
           />
         )}
       </Flex>
