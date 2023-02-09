@@ -1,4 +1,12 @@
-import { Flex, Icon } from "@chakra-ui/react";
+import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
+  Flex,
+  Icon,
+  Text
+} from "@chakra-ui/react";
 import React, { useState } from "react";
 import { BsLink45Deg, BsMic } from "react-icons/bs";
 import { BiPoll } from "react-icons/bi";
@@ -56,6 +64,7 @@ const NewPostForm: React.FC<NewPostFormProps> = ({ user }) => {
   const [selectedItem, setSelectedItem] = useState(formTabs[0].title);
   const [selectedFile, setSelectedFile] = useState<string>();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
   const [textInput, setTextInput] = useState({
     title: "",
     body: ""
@@ -96,6 +105,7 @@ const NewPostForm: React.FC<NewPostFormProps> = ({ user }) => {
       }
     } catch (error: any) {
       console.error("handleCreatePostError", error.message);
+      setError(true);
     }
     setLoading(false);
 
@@ -159,6 +169,12 @@ const NewPostForm: React.FC<NewPostFormProps> = ({ user }) => {
           />
         )}
       </Flex>
+      {error && (
+        <Alert status="error">
+          <AlertIcon />
+          <Text mr={2}>Error Creating Post!</Text>
+        </Alert>
+      )}
     </Flex>
   );
 };
