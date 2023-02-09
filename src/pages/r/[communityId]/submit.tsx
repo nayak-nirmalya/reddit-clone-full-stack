@@ -1,8 +1,12 @@
+import PageContent from "@/components/Layout/PageContent";
 import React from "react";
 
-type submitProps = {};
-
-const submit: React.FC<submitProps> = () => {
-  return <div>Have a good coding</div>;
+const SubmitPostPage: React.FC = () => {
+  return (
+    <PageContent>
+      <></>
+      <></>
+    </PageContent>
+  );
 };
-export default submit;
+export default SubmitPostPage;
