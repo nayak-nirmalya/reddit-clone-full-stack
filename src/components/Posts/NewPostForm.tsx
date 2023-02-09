@@ -37,11 +37,16 @@ export type TabItemType = {
 
 const NewPostForm: React.FC<NewPostFormProps> = () => {
   const [selectedItem, setSelectedItem] = useState(formTabs[0].title);
+
   return (
     <Flex direction="column" bg="white" borderRadius={4} mt={2}>
       <Flex width="100%">
         {formTabs.map((item) => (
-          <TabItem item={item} selected={item.title === selectedItem} />
+          <TabItem
+            item={item}
+            selected={item.title === selectedItem}
+            setSelectedTab={setSelectedItem}
+          />
         ))}
       </Flex>
     </Flex>
