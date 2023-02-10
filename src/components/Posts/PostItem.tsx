@@ -1,5 +1,5 @@
 import { Post } from "@/atoms/postAtom";
-import { Flex, Icon, Stack, Text } from "@chakra-ui/react";
+import { Flex, Icon, Image, Stack, Text } from "@chakra-ui/react";
 import moment from "moment";
 import React from "react";
 import {
@@ -73,6 +73,15 @@ const PostItem: React.FC<PostItemProps> = ({
               {moment(new Date(post.createdAt?.seconds * 1000)).fromNow()}
             </Text>
           </Stack>
+          <Text fontSize="12pt" fontWeight={600}>
+            {post.title}
+          </Text>
+          <Text fontSize="10pt">{post.body}</Text>
+          {post.imageURL && (
+            <Flex justify="center" align="center" p={2}>
+              <Image maxHeight="460px" src={post.imageURL} alt={post.title} />
+            </Flex>
+          )}
         </Stack>
       </Flex>
     </Flex>
