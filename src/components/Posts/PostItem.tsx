@@ -2,6 +2,7 @@ import { Post } from "@/atoms/postAtom";
 import { Flex, Icon, Image, Stack, Text } from "@chakra-ui/react";
 import moment from "moment";
 import React from "react";
+import { BsChat } from "react-icons/bs";
 import {
   IoArrowDownCircleOutline,
   IoArrowDownCircleSharp,
@@ -83,6 +84,18 @@ const PostItem: React.FC<PostItemProps> = ({
             </Flex>
           )}
         </Stack>
+        <Flex ml={1} mb={0.5} color="gray.500">
+          <Flex
+            align="center"
+            p="8px 10px"
+            borderRadius={4}
+            _hover={{ bg: "gray.200" }}
+            cursor="pointer"
+          >
+            <Icon as={BsChat} mr={2} />
+            <Text fontSize="9pt">{post.numberOfComments}</Text>
+          </Flex>
+        </Flex>
       </Flex>
     </Flex>
   );
