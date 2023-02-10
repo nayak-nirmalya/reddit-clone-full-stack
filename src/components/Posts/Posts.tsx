@@ -40,7 +40,7 @@ const Posts: React.FC<PostsProps> = ({ communityData }) => {
         posts: posts as Post[]
       }));
 
-      console.log("posts", posts);
+      // console.log("posts", posts);
     } catch (error: any) {
       console.error("getPostsError", error.message);
     }
@@ -54,6 +54,7 @@ const Posts: React.FC<PostsProps> = ({ communityData }) => {
     <Stack>
       {postStateValue.posts.map((item) => (
         <PostItem
+          key={item.title}
           post={item}
           userIsCreator={user?.uid === item.creatorId}
           userVoteValue={undefined}

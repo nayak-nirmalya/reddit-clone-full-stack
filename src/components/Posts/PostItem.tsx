@@ -1,5 +1,6 @@
 import { Post } from "@/atoms/postAtom";
 import { Flex, Icon, Stack, Text } from "@chakra-ui/react";
+import moment from "moment";
 import React from "react";
 import {
   IoArrowDownCircleOutline,
@@ -67,7 +68,10 @@ const PostItem: React.FC<PostItemProps> = ({
         <Stack spacing={1} p="10px">
           <Stack direction="row" spacing={0.6} align="center" fontSize="9pt">
             {/* Home Page Check */}
-            <Text>Posted by u/{post.creatorDisplayName}</Text>
+            <Text>
+              Posted by u/{post.creatorDisplayName}{" "}
+              {moment(new Date(post.createdAt?.seconds * 1000)).fromNow()}
+            </Text>
           </Stack>
         </Stack>
       </Flex>
