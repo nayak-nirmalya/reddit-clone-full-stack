@@ -1,22 +1,8 @@
-import {
-  Alert,
-  AlertDescription,
-  AlertIcon,
-  AlertTitle,
-  Flex,
-  Icon,
-  Text
-} from "@chakra-ui/react";
-import React, { useState } from "react";
-import { BsLink45Deg, BsMic } from "react-icons/bs";
-import { BiPoll } from "react-icons/bi";
-import { IoDocumentText, IoImageOutline } from "react-icons/io5";
-import TabItem from "./TabItem";
-import TextInputs from "./PostForm/TextInputs";
-import ImageUpload from "./PostForm/ImageUpload";
 import { Post } from "@/atoms/postAtom";
+import { firestore, storage } from "@/firebase/clientApp";
+import useSelectFile from "@/hooks/useSelectFile";
+import { Alert, AlertIcon, Flex, Icon, Text } from "@chakra-ui/react";
 import { User } from "firebase/auth";
-import { useRouter } from "next/router";
 import {
   addDoc,
   collection,
@@ -24,8 +10,15 @@ import {
   Timestamp,
   updateDoc
 } from "firebase/firestore";
-import { firestore, storage } from "@/firebase/clientApp";
 import { getDownloadURL, ref, uploadString } from "firebase/storage";
+import { useRouter } from "next/router";
+import React, { useState } from "react";
+import { BiPoll } from "react-icons/bi";
+import { BsLink45Deg, BsMic } from "react-icons/bs";
+import { IoDocumentText, IoImageOutline } from "react-icons/io5";
+import ImageUpload from "./PostForm/ImageUpload";
+import TextInputs from "./PostForm/TextInputs";
+import TabItem from "./TabItem";
 
 type NewPostFormProps = {
   user: User;
@@ -62,13 +55,14 @@ export type TabItemType = {
 const NewPostForm: React.FC<NewPostFormProps> = ({ user }) => {
   const router = useRouter();
   const [selectedItem, setSelectedItem] = useState(formTabs[0].title);
-  const [selectedFile, setSelectedFile] = useState<string>();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [textInput, setTextInput] = useState({
     title: "",
     body: ""
   });
+
+  const { selectedFile, setSelectedFile, onSelectFile } = useSelectFile();
 
   const handleCreatePost = async () => {
     const communityId = router.query.communityId;
@@ -112,20 +106,6 @@ const NewPostForm: React.FC<NewPostFormProps> = ({ user }) => {
     setLoading(false);
   };
 
-  const onSelectImage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const reader = new FileReader();
-
-    if (event.target.files?.[0]) {
-      reader.readAsDataURL(event.target.files[0]);
-    }
-
-    reader.onload = (readerEvent) => {
-      if (readerEvent.target?.result) {
-        setSelectedFile(readerEvent.target.result as string);
-      }
-    };
-  };
-
   const onTextChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -162,7 +142,7 @@ const NewPostForm: React.FC<NewPostFormProps> = ({ user }) => {
         {selectedItem === "Images & Video" && (
           <ImageUpload
             selectedFile={selectedFile}
-            onSelectImage={onSelectImage}
+            onSelectImage={onSelectFile}
             setSelectedTab={setSelectedItem}
             setSelectedFile={setSelectedFile}
           />
