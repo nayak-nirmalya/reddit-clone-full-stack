@@ -1,13 +1,117 @@
-import { Post, postState } from "@/atoms/postAtom";
-import { firestore, storage } from "@/firebase/clientApp";
+import { Post, postState, PostVote } from "@/atoms/postAtom";
+import { auth, firestore, storage } from "@/firebase/clientApp";
 import { deleteObject, ref } from "@firebase/storage";
-import { deleteDoc, doc } from "firebase/firestore";
+import { collection, deleteDoc, doc, writeBatch } from "firebase/firestore";
+import { useAuthState } from "react-firebase-hooks/auth";
 import { useRecoilState } from "recoil";
 
 const usePosts = () => {
+  const [user] = useAuthState(auth);
   const [postStateValue, setPostStateValue] = useRecoilState(postState);
 
-  const onVote = async () => {};
+  const onVote = async (post: Post, vote: number, communityId: string) => {
+    try {
+      const { voteStatus } = post;
+      const existingVote = postStateValue.postVotes.find(
+        (vote) => vote.postId === post.id
+      );
+
+      const batch = writeBatch(firestore);
+      const updatedPost = { ...post };
+      const updatedPosts = [...postStateValue.posts];
+      let updatedPostVotes = [...postStateValue.postVotes];
+      let voteChange = vote;
+
+      // new vote
+      if (!existingVote) {
+        // create a new post vote document
+        const postVoteRef = doc(
+          collection(firestore, "users", `${user?.uid}/postVotes`)
+        );
+
+        const newVote: PostVote = {
+          id: postVoteRef.id,
+          postId: post.id!,
+          communityId,
+          voteValue: vote
+        };
+
+        batch.set(postVoteRef, newVote);
+
+        // add or subtract 1 from vote status
+        updatedPost.voteStatus = voteStatus + vote;
+        updatedPostVotes = [...updatedPostVotes, newVote];
+      }
+
+      // existing vote
+      else {
+        const postVoteRef = doc(
+          firestore,
+          "users",
+          `${user?.uid}/postVotes/${existingVote.id}`
+        );
+
+        // removing vote
+        if (existingVote.voteValue === vote) {
+          // add or subtract 1 from vote status
+          updatedPost.voteStatus = voteStatus - vote;
+          updatedPostVotes = updatedPostVotes.filter(
+            (vote) => vote.id !== existingVote.id
+          );
+
+          // delete the postvote doc
+          batch.delete(postVoteRef);
+
+          voteChange *= -1;
+        }
+
+        // flipping the vote (up > down || down > up)
+        else {
+          // add or sub 2 from vote status
+          updatedPost.voteStatus = voteStatus + 2 * vote;
+
+          const voteIndex = postStateValue.postVotes.findIndex(
+            (vote) => vote.id === existingVote.id
+          );
+
+          if (voteIndex !== -1) {
+            updatedPostVotes[voteIndex] = {
+              ...existingVote,
+              voteValue: vote
+            };
+          }
+
+          // update existing post vote doc
+          batch.update(postVoteRef, {
+            voteValue: vote
+          });
+
+          voteChange = 2 * vote;
+        }
+      }
+
+      // update state with updated values
+      const postIndex = postStateValue.posts.findIndex(
+        (item) => item.id === post.id
+      );
+      updatedPosts[postIndex!] = updatedPost;
+      setPostStateValue((prev) => ({
+        ...prev,
+        posts: updatedPosts,
+        postVotes: updatedPostVotes
+      }));
+
+      // update post doc
+      // const postRef = doc(collection(firestore, "posts", post.id!));
+      const postRef = doc(firestore, "posts", post.id!);
+
+      batch.update(postRef, { voteStatus: voteStatus + voteChange });
+
+      await batch.commit();
+    } catch (error: any) {
+      console.error("onVoteError", error);
+    }
+  };
 
   const onSelectPost = () => {};
 
