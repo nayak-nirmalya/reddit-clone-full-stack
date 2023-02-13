@@ -29,7 +29,7 @@ type PostItemProps = {
   userVoteValue?: number;
   onVote: (post: Post, vote: number, communityId: string) => void;
   onDeletePost: (post: Post) => Promise<boolean>;
-  onSelectPost: () => void;
+  onSelectPost?: (post: Post) => void;
 };
 
 const PostItem: React.FC<PostItemProps> = ({
@@ -68,7 +68,7 @@ const PostItem: React.FC<PostItemProps> = ({
       borderColor="gray.300"
       borderRadius={4}
       cursor="pointer"
-      onClick={onSelectPost}
+      onClick={() => onSelectPost && onSelectPost(post)}
       _hover={{ borderColor: "gray.500" }}
     >
       <Flex
