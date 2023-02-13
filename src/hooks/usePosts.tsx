@@ -1,3 +1,4 @@
+import { authModalState } from "@/atoms/authModalAtom";
 import { communityState } from "@/atoms/communitiesAtom";
 import { Post, postState, PostVote } from "@/atoms/postAtom";
 import { auth, firestore, storage } from "@/firebase/clientApp";
@@ -13,14 +14,20 @@ import {
 } from "firebase/firestore";
 import { useEffect } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 
 const usePosts = () => {
   const [user] = useAuthState(auth);
   const [postStateValue, setPostStateValue] = useRecoilState(postState);
   const currentCommunity = useRecoilValue(communityState).currentCommunity;
+  const setAuthModalState = useSetRecoilState(authModalState);
 
   const onVote = async (post: Post, vote: number, communityId: string) => {
+    if (!user?.uid) {
+      setAuthModalState({ open: true, view: "login" });
+      return;
+    }
+
     try {
       const { voteStatus } = post;
       const existingVote = postStateValue.postVotes.find(
