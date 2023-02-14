@@ -41,6 +41,7 @@ const Comments: React.FC<CommentsProps> = ({
   const [comments, setComments] = useState<Comment[]>([]);
   const [fetchLoading, setFetchLoading] = useState(true);
   const [createLoading, setCreateLoading] = useState(false);
+  const [loadingDeleteId, setLoadingDeleteId] = useState("");
 
   const setPostState = useSetRecoilState(postState);
 
@@ -92,9 +93,36 @@ const Comments: React.FC<CommentsProps> = ({
   };
 
   const onDeleteComment = async (comment: Comment) => {
-    // delete comment doc
-    // update post number0fComments: -1
-    // update recoil state
+    setLoadingDeleteId(comment.id);
+    try {
+      const batch = writeBatch(firestore);
+
+      // delete comment doc
+      const commentDocRef = doc(firestore, "comments", comment.id);
+      batch.delete(commentDocRef);
+
+      // update post number0fComments: -1
+      const postDocRef = doc(firestore, "posts", selectedPost?.id!);
+      batch.update(postDocRef, {
+        numberOfComments: increment(-1)
+      });
+
+      await batch.commit();
+
+      // update recoil state
+      setPostState((prev) => ({
+        ...prev,
+        selectedPost: {
+          ...prev.selectedPost,
+          numberOfComments: prev.selectedPost?.numberOfComments! - 1
+        } as Post
+      }));
+
+      setComments((prev) => prev.filter((item) => item.id !== comment.id));
+    } catch (error) {
+      console.error("onDeleteCommentError", error);
+    }
+    setLoadingDeleteId("");
   };
 
   const getPostComments = async () => {
@@ -173,7 +201,7 @@ const Comments: React.FC<CommentsProps> = ({
                     key={comment.id}
                     comment={comment}
                     onDeleteComment={onDeleteComment}
-                    loadingDelete={false}
+                    loadingDelete={loadingDeleteId === comment.id}
                     userId={user.uid}
                   />
                 ))}
