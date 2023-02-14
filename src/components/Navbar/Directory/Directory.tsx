@@ -1,6 +1,14 @@
 import useDirectory from "@/hooks/useDirectory";
 import { ChevronDownIcon } from "@chakra-ui/icons";
-import { Flex, Icon, Menu, MenuButton, MenuList, Text } from "@chakra-ui/react";
+import {
+  Flex,
+  Icon,
+  Image,
+  Menu,
+  MenuButton,
+  MenuList,
+  Text
+} from "@chakra-ui/react";
 import React from "react";
 import { TiHome } from "react-icons/ti";
 import Communities from "./Communities";
@@ -31,7 +39,22 @@ const UserMenu: React.FC = () => {
           }}
         >
           <Flex align="center">
-            <Icon fontSize={24} mr={{ base: 1, md: 2 }} as={TiHome} />
+            {directoryState.selectedMenuItem.imageURL ? (
+              <Image
+                src={directoryState.selectedMenuItem.imageURL}
+                alt="CommunityImage"
+                borderRadius="full"
+                boxSize="24px"
+                mr={2}
+              />
+            ) : (
+              <Icon
+                fontSize={24}
+                mr={{ base: 1, md: 2 }}
+                as={directoryState.selectedMenuItem.icon}
+                color={directoryState.selectedMenuItem.iconColor}
+              />
+            )}
             <Flex
               display={{
                 base: "none",
@@ -39,7 +62,7 @@ const UserMenu: React.FC = () => {
               }}
             >
               <Text fontWeight={600} fontSize="10pt">
-                Home
+                {directoryState.selectedMenuItem.displayText}
               </Text>
             </Flex>
           </Flex>
