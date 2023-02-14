@@ -1,6 +1,6 @@
 import { Flex, Icon, Image, MenuItem } from "@chakra-ui/react";
 import React from "react";
-import { IconType } from "react-icons/lib";
+import { IconType } from "react-icons";
 
 type MenuListItemProps = {
   displayText: string;
