@@ -1,6 +1,13 @@
 import { Post, postState } from "@/atoms/postAtom";
 import { firestore } from "@/firebase/clientApp";
-import { Box, Flex, Stack } from "@chakra-ui/react";
+import {
+  Box,
+  Flex,
+  SkeletonCircle,
+  SkeletonText,
+  Stack,
+  Text
+} from "@chakra-ui/react";
 import { User } from "@firebase/auth";
 import {
   collection,
@@ -110,15 +117,46 @@ const Comments: React.FC<CommentsProps> = ({
           onCreateComment={onCreateComment}
         />
       </Flex>
-      <Stack spacing={6}>
-        {comments.map((comment) => (
-          <CommentItem
-            comment={comment}
-            onDeleteComment={onDeleteComment}
-            loadingDelete={false}
-            userId={user.uid}
-          />
-        ))}
+      <Stack spacing={6} p={2}>
+        {fetchLoading ? (
+          <>
+            {[0, 1, 2].map((item) => (
+              <Box key={item} padding="6" bg="white">
+                <SkeletonCircle size="10" />
+                <SkeletonText mt="4" noOfLines={2} spacing="4" />
+              </Box>
+            ))}
+          </>
+        ) : (
+          <>
+            {comments.length === 0 ? (
+              <Flex
+                direction="column"
+                justify="center"
+                align="center"
+                borderTop="1px solid"
+                borderColor="gray.100"
+                p={20}
+              >
+                <Text fontWeight={700} opacity={0.3}>
+                  No Comments Yet
+                </Text>
+              </Flex>
+            ) : (
+              <>
+                {comments.map((comment) => (
+                  <CommentItem
+                    key={comment.id}
+                    comment={comment}
+                    onDeleteComment={onDeleteComment}
+                    loadingDelete={false}
+                    userId={user.uid}
+                  />
+                ))}
+              </>
+            )}
+          </>
+        )}
       </Stack>
     </Box>
   );
