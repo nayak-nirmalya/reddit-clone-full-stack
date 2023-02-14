@@ -54,6 +54,8 @@ const Comments: React.FC<CommentsProps> = ({
 
       batch.set(commentDocRef, newComment);
 
+      newComment.createdAt = { seconds: Date.now() / 1000 } as Timestamp;
+
       // update post number0fComments: +1
       const postDocRef = doc(firestore, "posts", selectedPost?.id!);
       batch.update(postDocRef, {
