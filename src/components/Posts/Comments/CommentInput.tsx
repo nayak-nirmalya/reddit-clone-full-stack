@@ -37,19 +37,21 @@ const CommentInput: React.FC<CommentInputProps> = ({
             minHeight="160px"
             pb={10}
             mt={1}
+            borderColor="gray.400"
             _placeholder={{ color: "gray.500" }}
             _focus={{
-              outline: "none"
+              outline: "none",
+              bg: "white"
               //   border: "1px solid black"
             }}
           />
           <Flex
-            position="absolute"
+            position="relative"
             left="1px"
             right={0.1}
             bottom="1px"
             justify="flex-end"
-            bg="gray.100"
+            // bg="gray.100"
             p="6px 8px"
             borderRadius="0px 0px 4px 4px"
           >
