@@ -69,6 +69,7 @@ export default function Home() {
                 onDeletePost={onDeletePost}
                 onVote={onVote}
                 userIsCreator={user?.uid === post.creatorId}
+                homePage
                 userVoteValue={
                   postStateValue.postVotes.find(
                     (item) => item.postId == item.id
