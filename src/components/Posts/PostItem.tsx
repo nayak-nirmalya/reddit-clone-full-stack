@@ -149,6 +149,7 @@ const PostItem: React.FC<PostItemProps> = ({
                   <Text
                     fontWeight={700}
                     _hover={{ textDecoration: "underline" }}
+                    onClick={(event) => event.stopPropagation()}
                   >{`r/${post.communityId}`}</Text>
                 </Link>
                 <Icon as={BsDot} color="gray.500" fontSize={8} />
