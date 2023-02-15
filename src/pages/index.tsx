@@ -1,5 +1,7 @@
 import { Post, PostVote } from "@/atoms/postAtom";
 import CreatePostLink from "@/components/Community/CreatePostLink";
+import PersonalHome from "@/components/Community/PersonalHome";
+import Premium from "@/components/Community/Premium";
 import Recomendations from "@/components/Community/Recomendations";
 import PageContent from "@/components/Layout/PageContent";
 import PostItem from "@/components/Posts/PostItem";
@@ -152,9 +154,11 @@ export default function Home() {
           </Stack>
         )}
       </>
-      <>
+      <Stack spacing={5}>
         <Recomendations />
-      </>
+        <Premium />
+        <PersonalHome />
+      </Stack>
     </PageContent>
   );
 }
