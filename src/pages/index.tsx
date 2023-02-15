@@ -1,5 +1,4 @@
-import { communityState } from "@/atoms/communitiesAtom";
-import { Post } from "@/atoms/postAtom";
+import { Post, PostVote } from "@/atoms/postAtom";
 import CreatePostLink from "@/components/Community/CreatePostLink";
 import PageContent from "@/components/Layout/PageContent";
 import PostItem from "@/components/Posts/PostItem";
@@ -18,7 +17,6 @@ import {
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { useRecoilValue } from "recoil";
 
 export default function Home() {
   const [user, loadingUser] = useAuthState(auth);
@@ -85,7 +83,27 @@ export default function Home() {
     setLoading(false);
   };
 
-  const getUserPostVotes = () => {};
+  const getUserPostVotes = async () => {
+    try {
+      const postIds = postStateValue.posts.map((post) => post.id);
+      const postVotesQuery = query(
+        collection(firestore, `users/${user?.uid}/postVotes`),
+        where("postId", "in", postIds)
+      );
+      const postVotesDocs = await getDocs(postVotesQuery);
+      const postVotes = postVotesDocs.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
+      setPostStateValue((prev) => ({
+        ...prev,
+        postVotes: postVotes as PostVote[]
+      }));
+    } catch (error) {
+      console.error("getUserPostVotesError", error);
+    }
+  };
 
   useEffect(() => {
     if (communityStateValue.snippetsFetched) buildUserHomeFeed();
@@ -94,6 +112,17 @@ export default function Home() {
   useEffect(() => {
     if (!user && !loadingUser) buildNoUserHomeFeed();
   }, [user, loadingUser]);
+
+  useEffect(() => {
+    if (user && postStateValue.posts.length) getUserPostVotes();
+
+    return () => {
+      setPostStateValue((prev) => ({
+        ...prev,
+        postVotes: []
+      }));
+    };
+  }, [user, postStateValue.posts]);
 
   return (
     <PageContent>
@@ -114,7 +143,7 @@ export default function Home() {
                 homePage
                 userVoteValue={
                   postStateValue.postVotes.find(
-                    (item) => item.postId == item.id
+                    (item) => item.postId === post.id
                   )?.voteValue
                 }
               />
