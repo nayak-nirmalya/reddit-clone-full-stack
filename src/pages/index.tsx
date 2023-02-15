@@ -1,5 +1,6 @@
 import { Post, PostVote } from "@/atoms/postAtom";
 import CreatePostLink from "@/components/Community/CreatePostLink";
+import Recomendations from "@/components/Community/Recomendations";
 import PageContent from "@/components/Layout/PageContent";
 import PostItem from "@/components/Posts/PostItem";
 import PostLoader from "@/components/Posts/PostLoader";
@@ -151,7 +152,9 @@ export default function Home() {
           </Stack>
         )}
       </>
-      <>{/* Recomendations */}</>
+      <>
+        <Recomendations />
+      </>
     </PageContent>
   );
 }
