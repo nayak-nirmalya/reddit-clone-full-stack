@@ -110,6 +110,7 @@ const Recomendations: React.FC = () => {
                       <Flex align="center" width="80%">
                         {item.imageURL ? (
                           <Image
+                            alt="ImageIcon"
                             borderRadius="full"
                             boxSize="28px"
                             src={item.imageURL}
